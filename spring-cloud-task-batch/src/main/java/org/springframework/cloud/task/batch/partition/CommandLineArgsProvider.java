@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright 2016-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.cloud.task.batch.partition;
 
 import java.util.List;
@@ -33,10 +34,10 @@ public interface CommandLineArgsProvider {
 	 * worker for the specified {@link ExecutionContext}.
 	 *
 	 * Note: This method is called once per partition.
-	 *
 	 * @param executionContext the unique state for the step to be executed.
 	 * @return a list of formatted command line arguments to be passed to the worker (the
-	 *         list will be joined via spaces).
+	 * list will be joined via spaces).
 	 */
 	List<String> getCommandLineArgs(ExecutionContext executionContext);
+
 }

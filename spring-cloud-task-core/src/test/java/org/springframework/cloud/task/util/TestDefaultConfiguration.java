@@ -1,11 +1,11 @@
 /*
- * Copyright 2015-2016 the original author or authors.
+ * Copyright 2015-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.task.configuration.TaskProperties;
 import org.springframework.cloud.task.listener.TaskLifecycleListener;
+import org.springframework.cloud.task.listener.TaskListenerExecutorObjectFactory;
 import org.springframework.cloud.task.repository.TaskExplorer;
 import org.springframework.cloud.task.repository.TaskNameResolver;
 import org.springframework.cloud.task.repository.TaskRepository;
@@ -45,10 +46,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(TaskProperties.class)
 public class TestDefaultConfiguration implements InitializingBean {
 
-	private TaskExecutionDaoFactoryBean factoryBean;
-
 	@Autowired
 	TaskProperties taskProperties;
+
+	private TaskExecutionDaoFactoryBean factoryBean;
 
 	@Autowired(required = false)
 	private ApplicationArguments applicationArguments;
@@ -60,12 +61,12 @@ public class TestDefaultConfiguration implements InitializingBean {
 	}
 
 	@Bean
-	public TaskRepository taskRepository(){
+	public TaskRepository taskRepository() {
 		return new SimpleTaskRepository(this.factoryBean);
 	}
 
 	@Bean
-	public TaskExplorer taskExplorer() throws Exception {
+	public TaskExplorer taskExplorer() {
 		return new SimpleTaskExplorer(this.factoryBean);
 	}
 
@@ -75,14 +76,21 @@ public class TestDefaultConfiguration implements InitializingBean {
 	}
 
 	@Bean
-	public TaskLifecycleListener taskHandler(TaskExplorer taskExplorer){
+	public TaskListenerExecutorObjectFactory taskListenerExecutorObjectProvider(
+			ConfigurableApplicationContext context) {
+		return new TaskListenerExecutorObjectFactory(context);
+	}
+
+	@Bean
+	public TaskLifecycleListener taskHandler(TaskExplorer taskExplorer) {
 		return new TaskLifecycleListener(taskRepository(), taskNameResolver(),
-				applicationArguments, taskExplorer, taskProperties);
+				this.applicationArguments, taskExplorer, this.taskProperties,
+				taskListenerExecutorObjectProvider(this.context));
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(this.context.getBeanNamesForType(DataSource.class).length == 1){
+		if (this.context.getBeanNamesForType(DataSource.class).length == 1) {
 			DataSource dataSource = this.context.getBean(DataSource.class);
 			this.factoryBean = new TaskExecutionDaoFactoryBean(dataSource);
 		}
@@ -90,4 +98,5 @@ public class TestDefaultConfiguration implements InitializingBean {
 			this.factoryBean = new TaskExecutionDaoFactoryBean();
 		}
 	}
+
 }

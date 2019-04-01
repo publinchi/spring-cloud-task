@@ -33,8 +33,7 @@ processes, typified by most web applications, do not save their lifecycle events
 tasks at the heart of Spring Cloud Task do.
 
 The lifecycle consists of a single task execution. This is a physical execution of a
-Spring Boot application configured to be a task (that is, it has the `@EnableTask`
-annotation).
+Spring Boot application configured to be a task (that is, it has the Sprint Cloud Task dependencies).
 
 At the beginning of a task, before any `CommandLineRunner` or `ApplicationRunner`
 implementations have been run, an entry in the `TaskRepository` that records the start
@@ -53,7 +52,7 @@ updated in the repository with the results.
 
 NOTE: If the application requires the `ApplicationContext` to be closed at the
 completion of a task (all `*Runner#run` methods have been called and the task
-repository has been updated), set the property `spring.cloud.task.closecontext_enable`
+repository has been updated), set the property `spring.cloud.task.closecontext_enabled`
 to true.
 
 [[features-task-execution-details]]
@@ -234,6 +233,9 @@ custom implementation of the `TaskConfigurer` interface. Typically, extending th
 overriding the required getter is sufficient. However, implementing your own from scratch
 may be required.
 
+NOTE: Users should not directly use getter methods from a `TaskConfigurer` directly
+unless they are using it to supply implementations to be exposed as Spring Beans.
+
 [[features-task-name]]
 === Task Name
 
@@ -277,7 +279,7 @@ exception is thrown by the task.
 The following example shows the three annotations in use:
 
 [source,java]
----
+----
  public class MyBean {
 
 	@BeforeTask
@@ -292,7 +294,8 @@ The following example shows the three annotations in use:
 	public void methodC(TaskExecution taskExecution, Throwable throwable) {
 	}
 }
----
+----
+
 
 [[features-task-execution-listener-Exceptions]]
 ==== Exceptions Thrown by Task Execution Listener
@@ -310,6 +313,13 @@ if it is of type
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-application-exit[ExitCodeGenerator].
 If so, it returns the exit code from  the `ExitCodeGenerator`. Otherwise, `1`
 is returned.
+
+In the case that an exception is thrown in an `onTaskStartup` method, the exit code for the application will be `1`.
+If an exception is thrown in either a `onTaskEnd` or `onTaskFailed`
+method, the exit code for the application will be the one established using the rules enumerated above.
+
+NOTE: In the case of an exception being thrown in a `onTaskStartup`, `onTaskEnd`, or `onTaskFailed`
+you can not override the exit code for the application using `ExitCodeExceptionMapper`.
 
 
 
@@ -345,20 +355,19 @@ the exit messages from both the `onTaskStartup` and `onTaskFailed`.
 
 Spring Cloud Task lets you establish that only one task with a given task name can be run
 at a time. To do so, you need to establish the <<features-task-name, task name>> and set
-`spring.cloud.task.singleInstanceEnabled=true` for each task execution. While the first
+`spring.cloud.task.single-instance-enabled=true` for each task execution. While the first
 task execution is running, any other time you try to run a task with the same
-<<features-task-name, task name>> and`spring.cloud.task.singleInstanceEnabled=true`, the
+<<features-task-name, task name>> and`spring.cloud.task.single-instance-enabled=true`, the
 task fails with the following error message: `Task with name "application" is already
-running.` The default value for `spring.cloud.task.singleInstanceEnabled` is `false`. The
-following example shows how to set `spring.cloud.task.singleInstanceEnabled` to `true`:
+running.` The default value for `spring.cloud.task.single-instance-enabled` is `false`. The
+following example shows how to set `spring.cloud.task.single-instance-enabled` to `true`:
 
-`spring.cloud.task.singleInstanceEnabled=true or false`
+`spring.cloud.task.single-instance-enabled=true or false`
 
 To use this feature, you must add the following Spring Integration dependencies to your
 application:
 
 [source,xml]
----
 <dependency>
     <groupId>org.springframework.integration</groupId>
     <artifactId>spring-integration-core</artifactId>
@@ -367,4 +376,17 @@ application:
     <groupId>org.springframework.integration</groupId>
     <artifactId>spring-integration-jdbc</artifactId>
 </dependency>
----
+
+NOTE: The exit code for the application will be 1 if the task fails because this feature
+is enabled and another task is running with the same task name.
+
+=== Disabling Spring Cloud Task Auto Configuration
+
+In cases where Spring Cloud Task should not be auto configured for an implementation, you can disable Task's auto configuration.
+This can be done either by adding the following annotation to your Task application:
+```
+@EnableAutoConfiguration(exclude={SimpleTaskAutoConfiguration.class})
+```
+You may also disable Task auto configuration by setting the `spring.cloud.task.autoconfiguration.enabled` property to `false`.
+
+

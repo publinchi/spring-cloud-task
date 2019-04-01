@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,48 +20,55 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 
 /**
- *  @author Ali Shahbour
+ * @author Ali Shahbour
  */
 @ConfigurationProperties(prefix = "spring.cloud.task.batch.events")
 public class TaskEventProperties {
 
-    /**
-     * Properties for jobExecution listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.JobExecutionListener}.
+	 */
 	private int jobExecutionOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for stepExecution listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.StepExecutionListener}.
+	 */
 	private int stepExecutionOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for itemRead listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.ItemReadListener}.
+	 */
 	private int itemReadOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for itemProcess listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.ItemProcessListener}.
+	 */
 	private int itemProcessOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for itemWrite listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.ItemWriteListener}.
+	 */
 	private int itemWriteOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for chunk listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.ChunkListener}.
+	 */
 	private int chunkOrder = Ordered.LOWEST_PRECEDENCE;
 
-    /**
-     * Properties for skip listener order
-     */
+	/**
+	 * Establishes the default {@link Ordered} precedence for
+	 * {@link org.springframework.batch.core.SkipListener}.
+	 */
 	private int skipOrder = Ordered.LOWEST_PRECEDENCE;
 
 	public int getJobExecutionOrder() {
-		return jobExecutionOrder;
+		return this.jobExecutionOrder;
 	}
 
 	public void setJobExecutionOrder(int jobExecutionOrder) {
@@ -69,7 +76,7 @@ public class TaskEventProperties {
 	}
 
 	public int getStepExecutionOrder() {
-		return stepExecutionOrder;
+		return this.stepExecutionOrder;
 	}
 
 	public void setStepExecutionOrder(int stepExecutionOrder) {
@@ -77,7 +84,7 @@ public class TaskEventProperties {
 	}
 
 	public int getItemReadOrder() {
-		return itemReadOrder;
+		return this.itemReadOrder;
 	}
 
 	public void setItemReadOrder(int itemReadOrder) {
@@ -85,7 +92,7 @@ public class TaskEventProperties {
 	}
 
 	public int getItemProcessOrder() {
-		return itemProcessOrder;
+		return this.itemProcessOrder;
 	}
 
 	public void setItemProcessOrder(int itemProcessOrder) {
@@ -93,7 +100,7 @@ public class TaskEventProperties {
 	}
 
 	public int getItemWriteOrder() {
-		return itemWriteOrder;
+		return this.itemWriteOrder;
 	}
 
 	public void setItemWriteOrder(int itemWriteOrder) {
@@ -101,7 +108,7 @@ public class TaskEventProperties {
 	}
 
 	public int getChunkOrder() {
-		return chunkOrder;
+		return this.chunkOrder;
 	}
 
 	public void setChunkOrder(int chunkOrder) {
@@ -109,10 +116,11 @@ public class TaskEventProperties {
 	}
 
 	public int getSkipOrder() {
-		return skipOrder;
+		return this.skipOrder;
 	}
 
 	public void setSkipOrder(int skipOrder) {
 		this.skipOrder = skipOrder;
 	}
+
 }

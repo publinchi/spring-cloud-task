@@ -1,36 +1,32 @@
 /*
- *  Copyright 2017 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *          http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.springframework.cloud.task;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.cloud.task.configuration.SingleTaskConfiguration;
-import org.springframework.cloud.task.configuration.SimpleTaskConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cloud.task.configuration.SimpleTaskAutoConfiguration;
 import org.springframework.cloud.task.configuration.SingleInstanceTaskListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.cloud.task.configuration.SingleTaskConfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Verifies that the beans created by the SimpleSingleTaskAutoConfigurationConfiguration
@@ -39,25 +35,27 @@ import static org.junit.Assert.assertNotNull;
  * @author Glenn Renfro
  * @since 2.0.0
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SimpleTaskConfiguration.class,
-		SingleTaskConfiguration.class,
-		EmbeddedDataSourceConfiguration.class})
-@TestPropertySource(properties = {
-		"spring.cloud.task.singleInstanceEnabled=true",
-})
 public class SimpleSingleTaskAutoConfigurationWithDataSourceTests {
 
-	@Autowired
-	private ConfigurableApplicationContext context;
-
 	@Test
-	public void testConfiguration() throws Exception {
+	public void testConfiguration() {
 
-		SingleInstanceTaskListener singleInstanceTaskListener = this.context.getBean(SingleInstanceTaskListener.class);
+		ApplicationContextRunner applicationContextRunner = new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(
+						PropertyPlaceholderAutoConfiguration.class,
+						SimpleTaskAutoConfiguration.class, SingleTaskConfiguration.class,
+						EmbeddedDataSourceConfiguration.class))
+				.withPropertyValues("spring.cloud.task.singleInstanceEnabled=true");
+		applicationContextRunner.run((context) -> {
+			SingleInstanceTaskListener singleInstanceTaskListener = context
+					.getBean(SingleInstanceTaskListener.class);
 
-		assertNotNull("singleInstanceTaskListener should not be null", singleInstanceTaskListener);
+			assertThat(singleInstanceTaskListener)
+					.as("singleInstanceTaskListener should not be null").isNotNull();
 
-		assertEquals(singleInstanceTaskListener.getClass(), SingleInstanceTaskListener.class);
+			assertThat(SingleInstanceTaskListener.class)
+					.isEqualTo(singleInstanceTaskListener.getClass());
+		});
 	}
+
 }

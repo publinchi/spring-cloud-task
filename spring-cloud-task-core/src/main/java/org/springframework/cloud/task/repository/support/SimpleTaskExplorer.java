@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,13 +31,16 @@ import org.springframework.util.Assert;
  *
  * @author Glenn Renfro
  * @author Michael Minella
+ * @author Gunnar Hillert
+ * @author David Turanski
  */
 public class SimpleTaskExplorer implements TaskExplorer {
 
 	private TaskExecutionDao taskExecutionDao;
 
 	public SimpleTaskExplorer(TaskExecutionDaoFactoryBean taskExecutionDaoFactoryBean) {
-		Assert.notNull(taskExecutionDaoFactoryBean, "taskExecutionDaoFactoryBean must not be null");
+		Assert.notNull(taskExecutionDaoFactoryBean,
+				"taskExecutionDaoFactoryBean must not be null");
 
 		try {
 			this.taskExecutionDao = taskExecutionDaoFactoryBean.getObject();
@@ -49,47 +52,64 @@ public class SimpleTaskExplorer implements TaskExplorer {
 
 	@Override
 	public TaskExecution getTaskExecution(long executionId) {
-		return taskExecutionDao.getTaskExecution(executionId);
+		return this.taskExecutionDao.getTaskExecution(executionId);
 	}
 
 	@Override
-	public Page<TaskExecution> findRunningTaskExecutions(String taskName, Pageable pageable) {
-		return taskExecutionDao.findRunningTaskExecutions(taskName, pageable);
+	public Page<TaskExecution> findRunningTaskExecutions(String taskName,
+			Pageable pageable) {
+		return this.taskExecutionDao.findRunningTaskExecutions(taskName, pageable);
 	}
 
 	@Override
 	public List<String> getTaskNames() {
-		return taskExecutionDao.getTaskNames();
+		return this.taskExecutionDao.getTaskNames();
 	}
 
 	@Override
 	public long getTaskExecutionCountByTaskName(String taskName) {
-		return taskExecutionDao.getTaskExecutionCountByTaskName(taskName);
+		return this.taskExecutionDao.getTaskExecutionCountByTaskName(taskName);
 	}
 
 	@Override
 	public long getTaskExecutionCount() {
-		return taskExecutionDao.getTaskExecutionCount();
+		return this.taskExecutionDao.getTaskExecutionCount();
 	}
 
 	@Override
-	public Page<TaskExecution> findTaskExecutionsByName(String taskName, Pageable pageable) {
-		return taskExecutionDao.findTaskExecutionsByName(taskName, pageable);
+	public long getRunningTaskExecutionCount() {
+		return this.taskExecutionDao.getRunningTaskExecutionCount();
+	}
+
+	@Override
+	public Page<TaskExecution> findTaskExecutionsByName(String taskName,
+			Pageable pageable) {
+		return this.taskExecutionDao.findTaskExecutionsByName(taskName, pageable);
 	}
 
 	@Override
 	public Page<TaskExecution> findAll(Pageable pageable) {
-		return taskExecutionDao.findAll(pageable);
+		return this.taskExecutionDao.findAll(pageable);
 	}
 
 	@Override
 	public Long getTaskExecutionIdByJobExecutionId(long jobExecutionId) {
-		return taskExecutionDao.getTaskExecutionIdByJobExecutionId(jobExecutionId);
+		return this.taskExecutionDao.getTaskExecutionIdByJobExecutionId(jobExecutionId);
 	}
 
 	@Override
 	public Set<Long> getJobExecutionIdsByTaskExecutionId(long taskExecutionId) {
-		return taskExecutionDao.getJobExecutionIdsByTaskExecutionId(taskExecutionId);
+		return this.taskExecutionDao.getJobExecutionIdsByTaskExecutionId(taskExecutionId);
+	}
+
+	@Override
+	public List<TaskExecution> getLatestTaskExecutionsByTaskNames(String... taskNames) {
+		return this.taskExecutionDao.getLatestTaskExecutionsByTaskNames(taskNames);
+	}
+
+	@Override
+	public TaskExecution getLatestTaskExecutionForTaskName(String taskName) {
+		return this.taskExecutionDao.getLatestTaskExecutionForTaskName(taskName);
 	}
 
 }
