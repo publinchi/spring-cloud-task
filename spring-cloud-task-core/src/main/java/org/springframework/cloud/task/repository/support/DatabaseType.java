@@ -82,7 +82,12 @@ public enum DatabaseType {
 	/**
 	 * DB2AS400 DB.
 	 */
-	DB2AS400("DB2AS400");
+	DB2AS400("DB2AS400"),
+
+	/**
+	 * SYBASE DB.
+	 */
+	SYBASE("Sybase");
 
 	private static final Map<String, DatabaseType> dbNameMap;
 

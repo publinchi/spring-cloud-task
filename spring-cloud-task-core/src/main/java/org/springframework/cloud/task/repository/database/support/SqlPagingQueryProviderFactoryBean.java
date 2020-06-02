@@ -39,6 +39,7 @@ import static org.springframework.cloud.task.repository.support.DatabaseType.MYS
 import static org.springframework.cloud.task.repository.support.DatabaseType.ORACLE;
 import static org.springframework.cloud.task.repository.support.DatabaseType.POSTGRES;
 import static org.springframework.cloud.task.repository.support.DatabaseType.SQLSERVER;
+import static org.springframework.cloud.task.repository.support.DatabaseType.SYBASE;
 
 /**
  * Factory bean for {@link PagingQueryProvider} interface. The database type will be
@@ -75,6 +76,7 @@ public class SqlPagingQueryProviderFactoryBean
 		this.providers.put(DB2VSE, new Db2PagingQueryProvider());
 		this.providers.put(DB2ZOS, new Db2PagingQueryProvider());
 		this.providers.put(DB2AS400, new Db2PagingQueryProvider());
+		this.providers.put(SYBASE, new SybasePagingQueryProvider());
 	}
 
 	/**
